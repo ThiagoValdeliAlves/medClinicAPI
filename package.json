@@ -1,0 +1,40 @@
+{
+  "devDependencies": {
+    "@types/node": "^26.4.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.6",
+    "prettier": "^3.9.6",
+    "tsx": "^4.23.12",
+    "typescript": "5.9",
+    "typescript-eslint": "^8.67.0"
+  },
+  "name": "medclinicapi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "migration:generate": "npm run build && typeorm migration:generate src/@commons/database/migrations/Migration -d dist/@commons/database/dataSource.js && eslint \"src/@commons/database/migrations/**/*.ts\" --fix",
+    "migration:run": "npm run build && typeorm migration:run -d dist/@commons/database/dataSource.js"  
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThiagoValdeliAlves/MedClinicAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/ThiagoValdeliAlves/MedClinicAPI/issues"
+  },
+  "homepage": "https://github.com/ThiagoValdeliAlves/MedClinicAPI#readme",
+  "dependencies": {
+    "dotenv": "^17.4.2",
+    "pg": "^8.23.0",
+    "typeorm": "^1.1.1"
+  }
+}
