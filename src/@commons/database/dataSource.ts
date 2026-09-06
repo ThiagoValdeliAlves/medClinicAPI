@@ -2,7 +2,7 @@ import 'dotenv/config'
 
 import { DataSource } from 'typeorm'
 
-import { User } from '../../modules/users/user.entity.js'
+import { User } from '../../modules/users/entities/user.entity.js'
 
 const databaseUrl = process.env.DATABASE_URL
 
