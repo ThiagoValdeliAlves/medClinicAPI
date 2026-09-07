@@ -12,4 +12,8 @@ export class UserRepository {
 
     return this.repository.save(user)
   }
+
+  async findByEmail(email: string) {
+    return this.repository.findOneBy({ email })
+  }
 }
