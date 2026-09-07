@@ -3,16 +3,11 @@ import 'dotenv/config'
 import { DataSource } from 'typeorm'
 
 import { User } from '../../modules/users/entities/user.entity.js'
-
-const databaseUrl = process.env.DATABASE_URL
-
-if (!databaseUrl) {
-  throw new Error('DATABASE_URL is not defined')
-}
+import { configs } from '../config/env.js'
 
 export const AppDataSource = new DataSource({
   type: 'postgres',
-  url: databaseUrl,
+  url: configs.databaseUrl,
   entities: [User],
   migrations: ['dist/@commons/database/migrations/*.js']
 })
