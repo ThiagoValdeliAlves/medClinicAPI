@@ -1,4 +1,5 @@
 import type { User } from './entities/user.entity.js'
+import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserRepository } from './user.repository.js'
 import { ConflictError } from '../../@commons/errors/conflict.error.js'
 import type { PasswordHasher } from '../../@commons/utils/interfaces/passwordHasher.js'
@@ -44,7 +45,7 @@ export class UserService {
   async login(email: string, password: string) {
     const user = await this.userRepository.findByEmail(email)
     if (!user) {
-      throw new Error('Credenciais inválidas')
+      throw new InvalidCredentials('Credenciais inválidas')
     }
 
     const valid = await this.passwordHasher.comparePassword(
@@ -52,7 +53,7 @@ export class UserService {
       user.passwordHash
     )
     if (!valid) {
-      throw new Error('Credenciais inválidas')
+      throw new InvalidCredentials('Credenciais inválidas')
     }
 
     return this.generateAuthResponse(user)

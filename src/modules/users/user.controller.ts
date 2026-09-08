@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 
+import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserService } from './user.service.js'
 import { ConflictError } from '../../@commons/errors/conflict.error.js'
 import { Validator } from '../../@commons/validators/validator.js'
@@ -83,6 +84,10 @@ export class UserController {
 
       return res.status(200).json(user)
     } catch (error) {
+      if (error instanceof InvalidCredentials) {
+        return res.status(401).json({ error: error.message })
+      }
+
       console.error(error)
       return res.status(500).json({ error: 'Erro interno' })
     }
