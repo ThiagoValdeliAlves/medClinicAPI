@@ -1,7 +1,7 @@
 import { UserController } from './user.controller.js'
 import { UserRepository } from './user.repository.js'
 import { UserService } from './user.service.js'
-import { configs } from '../../@commons/config/env.js'
+import { configs } from '../../@commons/configs/env.js'
 import { BcryptPasswordHasher } from '../../@commons/utils/bcrypt.js'
 import { JwtTokenService } from '../../@commons/utils/jsonWebToken.js'
 
