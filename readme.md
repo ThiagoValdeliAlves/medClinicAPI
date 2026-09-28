@@ -5,20 +5,9 @@ Base de integração para o consumo das rotas de usuários da API.
 ---
 ## Setup
 Após clonar o repositório e instalar as dependências, crie um arquivo .env com base nas variáveis disponíveis no .env.example.
-Execute o comando no terminal do projeto 'npm run migration:generate' para gerar as tabelas, 
-e 'npm run migration:run' para criar as tabelas no banco de dados
-
-
-Para testar os middlewares eu fiz a rota 'GET:/testes'. Pode passar um ou mais roles no parametro do guard 'roleGuard' usando a enum 'UserRoles'.
-Para testar o RoleGuard, altere a role do usuário diretamente no banco de dados.
-As roles disponíveis são:
-
-- user
-- admin
-- medic
+Execute o comando no terminal do projeto 'npm run migration:run' para criar as tabelas no banco de dados.
 
 ---
-
 ## Autenticação
 As rotas autenticadas utilizam JWT (JSON Web Token). Após realizar o login ou cadastro, o token retornado deve ser enviado no header:
 ```http
@@ -26,7 +15,6 @@ As rotas autenticadas utilizam JWT (JSON Web Token). Após realizar o login ou c
 ```
 
 ---
-
 ## EndPoints
 
 ### 1. Registrar usuário
@@ -122,4 +110,10 @@ Rota utilizada para testar os middlewares de autenticação e autorização por 
     Authorization: Bearer <token>
 ```
 
-O acesso à rota depende das roles configuradas no `RoleGuard`
+#### Login default de ADMIN
+```json
+{
+    "email": "admin@admin.com",
+    "password": "Admin123"
+}
+```

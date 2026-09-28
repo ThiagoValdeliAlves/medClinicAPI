@@ -8,7 +8,13 @@ if (!jwtSecret) {
   throw new Error('JWT_SECRET não definida')
 }
 
+const dummyHash = process.env.DUMMY_HASH
+if (!dummyHash) {
+  throw new Error('DUMMY_HASH não definida')
+}
+
 export const configs = {
   jwtSecret,
-  databaseUrl
+  databaseUrl,
+  dummyHash
 }
