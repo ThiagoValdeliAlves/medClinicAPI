@@ -2,6 +2,7 @@ import type { UserRoles } from '../../../modules/users/entities/enums/userRole.j
 
 export interface TokenPayload {
   id: number
+  name: string
   email: string
   role: UserRoles
 }

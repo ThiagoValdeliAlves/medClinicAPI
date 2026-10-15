@@ -3,6 +3,7 @@ import type { Request, Response } from 'express'
 import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserService } from './user.service.js'
 import { ConflictError } from '../../@commons/errors/conflict.error.js'
+import type { TokenPayload } from '../../@commons/utils/interfaces/tokenService.js'
 import { Validator } from '../../@commons/validators/validator.js'
 
 export class UserController {
@@ -91,5 +92,15 @@ export class UserController {
       console.error(error)
       return res.status(500).json({ error: 'Erro interno' })
     }
+  }
+
+  me(req: Request, res: Response<unknown, { user: TokenPayload }>) {
+    const data = res.locals.user
+    return res.status(200).json({
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      role: data.role
+    })
   }
 }

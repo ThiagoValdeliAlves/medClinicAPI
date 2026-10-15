@@ -14,19 +14,15 @@ export class UserService {
   ) {}
 
   private generateAuthResponse(user: User) {
-    const token = this.tokenService.generate({
+    const accessToken = this.tokenService.generate({
       id: user.id,
+      name: user.name,
       email: user.email,
       role: user.role
     })
 
     return {
-      token,
-      data: {
-        id: user.id,
-        email: user.email,
-        role: user.role
-      }
+      accessToken
     }
   }
 

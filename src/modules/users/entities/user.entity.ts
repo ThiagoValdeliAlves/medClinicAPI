@@ -14,6 +14,9 @@ export class User {
   })
   id!: number
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  name!: string
+
   @Column({ type: 'varchar', length: 255, unique: true })
   email!: string
 
@@ -24,7 +27,7 @@ export class User {
     type: 'enum',
     enum: UserRoles,
     enumName: 'user_roles',
-    default: UserRoles.USER
+    default: UserRoles.PATIENT
   })
   role!: UserRoles
 
