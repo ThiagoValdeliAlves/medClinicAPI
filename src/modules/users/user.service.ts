@@ -1,3 +1,4 @@
+import type { UserRoles } from './entities/enums/userRole.js'
 import type { User } from './entities/user.entity.js'
 import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserRepository } from './user.repository.js'
@@ -26,7 +27,12 @@ export class UserService {
     }
   }
 
-  async register(email: string, password: string) {
+  async register(
+    name: string,
+    email: string,
+    password: string,
+    role: UserRoles
+  ) {
     const existingUser = await this.userRepository.findByEmail(email)
     if (existingUser) {
       throw new ConflictError('Email já cadastrado')
@@ -34,7 +40,12 @@ export class UserService {
 
     const passwordHash = await this.passwordHasher.hashPassword(password)
 
-    const user = await this.userRepository.register(email, passwordHash)
+    const user = await this.userRepository.register(
+      name,
+      email,
+      passwordHash,
+      role
+    )
 
     return this.generateAuthResponse(user)
   }

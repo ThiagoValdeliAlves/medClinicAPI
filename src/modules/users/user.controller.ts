@@ -1,5 +1,6 @@
 import type { Request, Response } from 'express'
 
+import { UserRoles } from './entities/enums/userRole.js'
 import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserService } from './user.service.js'
 import { ConflictError } from '../../@commons/errors/conflict.error.js'
@@ -10,6 +11,62 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   private validateBodyForAuth(body: unknown) {
+    if (!Validator.isObject(body)) {
+      return {
+        error: 'Body inválido',
+        data: null
+      }
+    }
+
+    if (!Validator.isNonEmptyString(body.name)) {
+      return {
+        error: 'Formato de nome inválido',
+        data: null
+      }
+    }
+
+    if (
+      !Validator.isNonEmptyString(body.email) ||
+      !Validator.isValidEmail(body.email)
+    ) {
+      return {
+        error: 'Formato de email inválido',
+        data: null
+      }
+    }
+
+    if (
+      !Validator.isNonEmptyString(body.password) ||
+      !Validator.isValidPassword(body.password)
+    ) {
+      return {
+        error: 'Formato de senha inválido',
+        data: null
+      }
+    }
+
+    if (
+      !Validator.isNonEmptyString(body.role) ||
+      !Object.values(UserRoles).includes(body.role as UserRoles)
+    ) {
+      return {
+        error: 'Formato de role inválido',
+        data: null
+      }
+    }
+
+    return {
+      error: null,
+      data: {
+        name: body.name,
+        email: body.email,
+        password: body.password,
+        role: body.role as UserRoles
+      }
+    }
+  }
+
+  private validateBodyForLogin(body: unknown) {
     if (!Validator.isObject(body)) {
       return {
         error: 'Body inválido',
@@ -55,8 +112,10 @@ export class UserController {
 
     try {
       const user = await this.userService.register(
+        result.data.name,
         result.data.email,
-        result.data.password
+        result.data.password,
+        result.data.role
       )
 
       return res.status(201).json(user)
@@ -72,7 +131,7 @@ export class UserController {
 
   async login(req: Request, res: Response) {
     const body: unknown = req.body
-    const result = this.validateBodyForAuth(body)
+    const result = this.validateBodyForLogin(body)
     if (result.error || !result.data) {
       return res.status(400).json({ error: result.error })
     }
