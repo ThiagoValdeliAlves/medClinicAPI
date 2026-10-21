@@ -4,7 +4,7 @@ export interface TokenPayload {
   id: number
   name: string
   email: string
-  role: UserRoles
+  roles: UserRoles[]
 }
 
 export interface TokenService {

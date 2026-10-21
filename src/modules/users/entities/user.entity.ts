@@ -27,9 +27,10 @@ export class User {
     type: 'enum',
     enum: UserRoles,
     enumName: 'user_roles',
-    default: UserRoles.PATIENT
+    array: true,
+    default: [UserRoles.PATIENT]
   })
-  role!: UserRoles
+  roles!: UserRoles[]
 
   @CreateDateColumn({
     type: 'timestamptz',

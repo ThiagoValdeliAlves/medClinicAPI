@@ -10,7 +10,7 @@ export class RoleGuard {
       res: Response<unknown, { user: TokenPayload }>,
       next: NextFunction
     ) => {
-      if (!roles.includes(res.locals.user.role)) {
+      if (!res.locals.user.roles.some((role) => roles.includes(role))) {
         return res.status(403).json({
           message: 'Acesso negado'
         })

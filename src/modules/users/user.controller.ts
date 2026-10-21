@@ -46,11 +46,14 @@ export class UserController {
     }
 
     if (
-      !Validator.isNonEmptyString(body.role) ||
-      !Object.values(UserRoles).includes(body.role as UserRoles)
+      !Array.isArray(body.roles) ||
+      body.roles.length === 0 ||
+      !body.roles.every((role: unknown) =>
+        Object.values(UserRoles).includes(role as UserRoles)
+      )
     ) {
       return {
-        error: 'Formato de role inválido',
+        error: 'Formato de roles inválido',
         data: null
       }
     }
@@ -61,7 +64,7 @@ export class UserController {
         name: body.name,
         email: body.email,
         password: body.password,
-        role: body.role as UserRoles
+        roles: body.roles as UserRoles[]
       }
     }
   }
@@ -115,7 +118,7 @@ export class UserController {
         result.data.name,
         result.data.email,
         result.data.password,
-        result.data.role
+        result.data.roles
       )
 
       return res.status(201).json(user)
@@ -159,7 +162,7 @@ export class UserController {
       id: data.id,
       name: data.name,
       email: data.email,
-      role: data.role
+      roles: data.roles
     })
   }
 }

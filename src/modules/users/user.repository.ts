@@ -9,13 +9,13 @@ export class UserRepository {
     name: string,
     email: string,
     passwordHash: string,
-    role: UserRoles
+    roles: UserRoles[]
   ): Promise<User> {
     const user = this.repository.create({
       name,
       email,
       passwordHash,
-      role
+      roles
     })
 
     return this.repository.save(user)

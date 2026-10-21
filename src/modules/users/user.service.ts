@@ -19,7 +19,7 @@ export class UserService {
       id: user.id,
       name: user.name,
       email: user.email,
-      role: user.role
+      roles: user.roles
     })
 
     return {
@@ -31,7 +31,7 @@ export class UserService {
     name: string,
     email: string,
     password: string,
-    role: UserRoles
+    roles: UserRoles[]
   ) {
     const existingUser = await this.userRepository.findByEmail(email)
     if (existingUser) {
@@ -44,7 +44,7 @@ export class UserService {
       name,
       email,
       passwordHash,
-      role
+      roles
     )
 
     return this.generateAuthResponse(user)
