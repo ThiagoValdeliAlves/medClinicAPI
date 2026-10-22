@@ -1,9 +1,8 @@
 import type { Request, Response } from 'express'
 
 import { UserRoles } from './entities/enums/userRole.js'
-import { InvalidCredentials } from './errors/invalidCredentials.error.js'
 import type { UserService } from './user.service.js'
-import { ConflictError } from '../../@commons/errors/conflict.error.js'
+import { DomainError, ERROR_CODE } from '../../@commons/errors/domain.error.js'
 import type { TokenPayload } from '../../@commons/utils/interfaces/tokenService.js'
 import { Validator } from '../../@commons/validators/validator.js'
 
@@ -12,37 +11,34 @@ export class UserController {
 
   private validateBodyForAuth(body: unknown) {
     if (!Validator.isObject(body)) {
-      return {
-        error: 'Body inválido',
-        data: null
-      }
+      throw new DomainError('Body inválido', ERROR_CODE.DADOS_INVALIDOS)
     }
 
     if (!Validator.isNonEmptyString(body.name)) {
-      return {
-        error: 'Formato de nome inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de nome inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     if (
       !Validator.isNonEmptyString(body.email) ||
       !Validator.isValidEmail(body.email)
     ) {
-      return {
-        error: 'Formato de email inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de email inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     if (
       !Validator.isNonEmptyString(body.password) ||
       !Validator.isValidPassword(body.password)
     ) {
-      return {
-        error: 'Formato de senha inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de senha inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     if (
@@ -52,107 +48,97 @@ export class UserController {
         Object.values(UserRoles).includes(role as UserRoles)
       )
     ) {
-      return {
-        error: 'Formato de roles inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de roles inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     return {
-      error: null,
-      data: {
-        name: body.name,
-        email: body.email,
-        password: body.password,
-        roles: body.roles as UserRoles[]
-      }
+      name: body.name,
+      email: body.email,
+      password: body.password,
+      roles: body.roles as UserRoles[]
     }
   }
 
   private validateBodyForLogin(body: unknown) {
     if (!Validator.isObject(body)) {
-      return {
-        error: 'Body inválido',
-        data: null
-      }
+      throw new DomainError('Body inválido', ERROR_CODE.DADOS_INVALIDOS)
     }
 
     if (
       !Validator.isNonEmptyString(body.email) ||
       !Validator.isValidEmail(body.email)
     ) {
-      return {
-        error: 'Formato de email inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de email inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     if (
       !Validator.isNonEmptyString(body.password) ||
       !Validator.isValidPassword(body.password)
     ) {
-      return {
-        error: 'Formato de senha inválido',
-        data: null
-      }
+      throw new DomainError(
+        'Formato de senha inválido',
+        ERROR_CODE.DADOS_INVALIDOS
+      )
     }
 
     return {
-      error: null,
-      data: {
-        email: body.email,
-        password: body.password
-      }
+      email: body.email,
+      password: body.password
     }
   }
 
   async register(req: Request, res: Response) {
-    const body: unknown = req.body
-    const result = this.validateBodyForAuth(body)
-    if (result.error || !result.data) {
-      return res.status(400).json({ error: result.error })
-    }
-
     try {
+      const data = this.validateBodyForAuth(req.body as unknown)
+
       const user = await this.userService.register(
-        result.data.name,
-        result.data.email,
-        result.data.password,
-        result.data.roles
+        data.name,
+        data.email,
+        data.password,
+        data.roles
       )
 
       return res.status(201).json(user)
     } catch (error) {
-      if (error instanceof ConflictError) {
-        return res.status(409).json({ error: error.message })
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
       }
 
       console.error(error)
-      return res.status(500).json({ error: 'Erro interno' })
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
     }
   }
 
   async login(req: Request, res: Response) {
-    const body: unknown = req.body
-    const result = this.validateBodyForLogin(body)
-    if (result.error || !result.data) {
-      return res.status(400).json({ error: result.error })
-    }
-
     try {
-      const user = await this.userService.login(
-        result.data.email,
-        result.data.password
-      )
+      const data = this.validateBodyForLogin(req.body as unknown)
+
+      const user = await this.userService.login(data.email, data.password)
 
       return res.status(200).json(user)
     } catch (error) {
-      if (error instanceof InvalidCredentials) {
-        return res.status(401).json({ error: error.message })
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
       }
 
       console.error(error)
-      return res.status(500).json({ error: 'Erro interno' })
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
     }
   }
 

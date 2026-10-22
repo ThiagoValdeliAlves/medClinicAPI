@@ -22,7 +22,6 @@ userRoutes.get(
   }
 )
 
-/// TODO: name
 userRoutes.post(
   '/register',
   authGuard.execute,

@@ -4,10 +4,13 @@ import healthRoutes from './modules/health/health.routes.js'
 import userRoutes from './modules/users/user.routes.js'
 
 const app = express()
+const apiRouter = express.Router()
+
 app.use(express.json())
 
-app.use('/api/v1/health', healthRoutes)
-app.use('/api/v1/auth', userRoutes)
-app.use('/api/v1/users', userRoutes)
+apiRouter.use('/health', healthRoutes)
+apiRouter.use('/auth', userRoutes)
+apiRouter.use('/users', userRoutes)
 
+app.use('/api/v1', apiRouter)
 export default app
