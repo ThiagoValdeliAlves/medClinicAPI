@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from 'express'
 
+import { ERROR_CODE, HTTP_STATUS_BY_CODE } from '../errors/domain.error.js'
 import type { TokenService } from '../utils/interfaces/tokenService.js'
 
 export class AuthGuard {
@@ -8,15 +9,19 @@ export class AuthGuard {
   execute = (req: Request, res: Response, next: NextFunction) => {
     const authHeader = req.headers.authorization
     if (!authHeader) {
-      return res.status(401).json({
-        message: 'Token não informado'
+      return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
+        statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
+        error: ERROR_CODE.NAO_AUTENTICADO,
+        message: ERROR_CODE.NAO_AUTENTICADO
       })
     }
 
     const [x, token] = authHeader.split(' ')
     if (x !== 'Bearer' || !token) {
-      return res.status(401).json({
-        message: 'Token não informado'
+      return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
+        statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
+        error: ERROR_CODE.NAO_AUTENTICADO,
+        message: ERROR_CODE.NAO_AUTENTICADO
       })
     }
 
@@ -27,8 +32,10 @@ export class AuthGuard {
 
       next()
     } catch {
-      return res.status(401).json({
-        message: 'Token inválido ou expirado'
+      return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
+        statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
+        error: ERROR_CODE.NAO_AUTENTICADO,
+        message: ERROR_CODE.NAO_AUTENTICADO
       })
     }
   }
