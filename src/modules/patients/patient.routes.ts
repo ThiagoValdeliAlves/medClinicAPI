@@ -16,4 +16,8 @@ patientRoutes.post(
   (req: Request, res: Response) => patientController.register(req, res)
 )
 
+patientRoutes.get('', authGuard.execute, (req: Request, res: Response) =>
+  patientController.find(req, res)
+)
+
 export default patientRoutes
