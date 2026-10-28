@@ -58,4 +58,17 @@ export class PatientService {
       createdAt: patient.creationDate
     }
   }
+
+  async updateName(id: number, name: string) {
+    const patient = await this.patientsRepository.updateName(id, name)
+
+    if (!patient) {
+      throw new DomainError(
+        'Paciente não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    return patient
+  }
 }

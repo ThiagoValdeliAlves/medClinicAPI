@@ -139,4 +139,46 @@ export class PatientController {
       })
     }
   }
+
+  async updateName(req: Request, res: Response) {
+    try {
+      const id = Number(req.params.id)
+
+      if (!Number.isInteger(id) || id < 1) {
+        throw new DomainError(
+          'ID do paciente inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      if (!Validator.isObject(req.body)) {
+        throw new DomainError('Body inválido', ERROR_CODE.DADOS_INVALIDOS)
+      }
+
+      if (!Validator.isNonEmptyString(req.body.name)) {
+        throw new DomainError(
+          'Formato de nome inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const patient = await this.patientService.updateName(
+        id,
+        req.body.name.trim()
+      )
+
+      return res.status(200).json(patient)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
+      }
+
+      console.error(error)
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
+    }
+  }
 }

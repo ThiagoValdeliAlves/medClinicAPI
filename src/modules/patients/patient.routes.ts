@@ -24,4 +24,11 @@ patientRoutes.get('/:id', authGuard.execute, (req: Request, res: Response) =>
   patientController.findById(req, res)
 )
 
+patientRoutes.patch(
+  '/:id',
+  authGuard.execute,
+  roleGuard.execute(UserRoles.ADMIN, UserRoles.SECRETARY),
+  (req: Request, res: Response) => patientController.updateName(req, res)
+)
+
 export default patientRoutes

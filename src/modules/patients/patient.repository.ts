@@ -30,4 +30,16 @@ export class PatientsRepository {
   async findById(id: number) {
     return this.repository.findOneBy({ id })
   }
+
+  async updateName(id: number, name: string): Promise<Patient | null> {
+    const patient = await this.repository.findOneBy({ id })
+
+    if (!patient) {
+      return null
+    }
+
+    patient.name = name
+
+    return this.repository.save(patient)
+  }
 }
