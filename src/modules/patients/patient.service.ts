@@ -40,4 +40,22 @@ export class PatientService {
       totalPages: Math.ceil(total / pageSize)
     }
   }
+
+  async findById(id: number) {
+    const patient = await this.patientsRepository.findById(id)
+
+    if (!patient) {
+      throw new DomainError(
+        'Paciente não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    return {
+      id: patient.id,
+      name: patient.name,
+      cpf: patient.cpf,
+      createdAt: patient.creationDate
+    }
+  }
 }

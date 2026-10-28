@@ -20,4 +20,8 @@ patientRoutes.get('', authGuard.execute, (req: Request, res: Response) =>
   patientController.find(req, res)
 )
 
+patientRoutes.get('/:id', authGuard.execute, (req: Request, res: Response) =>
+  patientController.findById(req, res)
+)
+
 export default patientRoutes
