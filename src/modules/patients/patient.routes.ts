@@ -31,4 +31,11 @@ patientRoutes.patch(
   (req: Request, res: Response) => patientController.updateName(req, res)
 )
 
+patientRoutes.delete(
+  '/:id',
+  authGuard.execute,
+  roleGuard.execute(UserRoles.ADMIN),
+  (req: Request, res: Response) => patientController.deleteById(req, res)
+)
+
 export default patientRoutes

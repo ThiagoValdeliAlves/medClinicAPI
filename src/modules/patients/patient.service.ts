@@ -71,4 +71,15 @@ export class PatientService {
 
     return patient
   }
+
+  async deleteById(id: number): Promise<void> {
+    const deleted = await this.patientsRepository.deleteById(id)
+
+    if (!deleted) {
+      throw new DomainError(
+        'Paciente não encontrado',
+        ERROR_CODE.PACIENTE_INDISPONIVEL
+      )
+    }
+  }
 }

@@ -42,4 +42,14 @@ export class PatientsRepository {
 
     return this.repository.save(patient)
   }
+
+  async deleteById(id: number): Promise<boolean> {
+    const result = await this.repository.delete(id)
+
+    return (
+      result.affected !== undefined &&
+      result.affected !== null &&
+      result.affected > 0
+    )
+  }
 }
