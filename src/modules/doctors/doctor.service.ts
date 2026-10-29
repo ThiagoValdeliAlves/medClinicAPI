@@ -51,4 +51,29 @@ export class DoctorsService {
       }
     }
   }
+
+  async find(page = 1, pageSize = 10, name?: string) {
+    const [doctors, total] = await this.doctorRepository.find(
+      page,
+      pageSize,
+      name
+    )
+
+    return {
+      items: doctors.map((doctor) => ({
+        id: doctor.id,
+        crm: doctor.crm,
+        user: {
+          id: doctor.user.id,
+          name: doctor.user.name,
+          email: doctor.user.email,
+          roles: doctor.user.roles
+        }
+      })),
+      page,
+      pageSize,
+      total,
+      totalPages: Math.ceil(total / pageSize)
+    }
+  }
 }

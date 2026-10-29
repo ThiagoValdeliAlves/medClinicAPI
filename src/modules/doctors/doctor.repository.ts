@@ -1,3 +1,5 @@
+import { ILike } from 'typeorm'
+
 import { Doctor } from './entities/doctor.entity.js'
 import { AppDataSource } from '../../@commons/database/dataSource.js'
 import { UserRoles } from '../users/entities/enums/userRole.js'
@@ -38,5 +40,24 @@ export class DoctorsRepository {
 
   async findByCRM(crm: string) {
     return this.repository.findOneBy({ crm })
+  }
+
+  async find(page = 1, pageSize = 10, name?: string) {
+    return this.repository.findAndCount({
+      relations: {
+        user: true
+      },
+      ...(name
+        ? {
+            where: {
+              user: {
+                name: ILike(`%${name}%`)
+              }
+            }
+          }
+        : {}),
+      skip: (page - 1) * pageSize,
+      take: pageSize
+    })
   }
 }

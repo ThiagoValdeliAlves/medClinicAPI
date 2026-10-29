@@ -78,4 +78,58 @@ export class DoctorsController {
       })
     }
   }
+
+  async find(req: Request, res: Response) {
+    try {
+      const pageParam = req.query.page
+      const pageSizeParam = req.query.pageSize
+      const nameParam = req.query.name
+
+      const page = pageParam === undefined ? 1 : Number(pageParam)
+      const pageSize = pageSizeParam === undefined ? 10 : Number(pageSizeParam)
+
+      if (
+        !Number.isInteger(page) ||
+        page < 1 ||
+        !Number.isInteger(pageSize) ||
+        pageSize < 1 ||
+        pageSize > 100
+      ) {
+        throw new DomainError(
+          'Parâmetros de paginação inválidos',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      if (
+        nameParam !== undefined &&
+        (typeof nameParam !== 'string' || nameParam.trim() === '')
+      ) {
+        throw new DomainError(
+          'Parâmetro name inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const doctors = await this.doctorService.find(
+        page,
+        pageSize,
+        typeof nameParam === 'string' ? nameParam.trim() : undefined
+      )
+
+      return res.status(200).json(doctors)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
+      }
+
+      console.error(error)
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
+    }
+  }
 }
