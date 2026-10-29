@@ -23,7 +23,7 @@ userRoutes.get(
 )
 
 userRoutes.post(
-  '/register',
+  '',
   authGuard.execute,
   roleGuard.execute(UserRoles.ADMIN),
   (req, res) => userController.register(req, res)

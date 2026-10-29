@@ -44,6 +44,7 @@ export class UserController {
     if (
       !Array.isArray(body.roles) ||
       body.roles.length === 0 ||
+      body.roles.includes(UserRoles.DOCTOR) ||
       !body.roles.every((role: unknown) =>
         Object.values(UserRoles).includes(role as UserRoles)
       )

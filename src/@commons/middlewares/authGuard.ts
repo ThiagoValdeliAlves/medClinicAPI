@@ -12,7 +12,7 @@ export class AuthGuard {
       return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
         statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
         error: ERROR_CODE.NAO_AUTENTICADO,
-        message: ERROR_CODE.NAO_AUTENTICADO
+        message: 'Sem token'
       })
     }
 
@@ -21,7 +21,7 @@ export class AuthGuard {
       return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
         statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
         error: ERROR_CODE.NAO_AUTENTICADO,
-        message: ERROR_CODE.NAO_AUTENTICADO
+        message: 'token inválido'
       })
     }
 
@@ -35,7 +35,7 @@ export class AuthGuard {
       return res.status(HTTP_STATUS_BY_CODE.NAO_AUTENTICADO).json({
         statusCode: HTTP_STATUS_BY_CODE.NAO_AUTENTICADO,
         error: ERROR_CODE.NAO_AUTENTICADO,
-        message: ERROR_CODE.NAO_AUTENTICADO
+        message: 'Token inválido'
       })
     }
   }

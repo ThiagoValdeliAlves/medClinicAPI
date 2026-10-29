@@ -1,0 +1,19 @@
+import { Router, type Request, type Response } from 'express'
+
+import { doctorsController } from './doctor.container.js'
+import {
+  authGuard,
+  roleGuard
+} from '../../@commons/middlewares/middleware.container.js'
+import { UserRoles } from '../users/entities/enums/userRole.js'
+
+const doctorsRoutes = Router()
+
+doctorsRoutes.post(
+  '',
+  authGuard.execute,
+  roleGuard.execute(UserRoles.ADMIN),
+  (req: Request, res: Response) => doctorsController.register(req, res)
+)
+
+export default doctorsRoutes

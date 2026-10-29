@@ -49,4 +49,8 @@ export class Validator {
       firstDigit === Number(digits[9]) && secondDigit === Number(digits[10])
     )
   }
+
+  static isValidCRM(crm: string): boolean {
+    return /^CRM-[A-Z]{2}-\d+$/.test(crm)
+  }
 }

@@ -22,7 +22,11 @@ export class UserService {
     })
 
     return {
-      accessToken
+      accessToken,
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles: user.roles
     }
   }
 
