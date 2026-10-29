@@ -60,4 +60,13 @@ export class DoctorsRepository {
       take: pageSize
     })
   }
+
+  async findById(id: number) {
+    return this.repository.findOne({
+      where: { id },
+      relations: {
+        user: true
+      }
+    })
+  }
 }

@@ -76,4 +76,26 @@ export class DoctorsService {
       totalPages: Math.ceil(total / pageSize)
     }
   }
+
+  async findById(id: number) {
+    const doctor = await this.doctorRepository.findById(id)
+
+    if (!doctor) {
+      throw new DomainError(
+        'Médico não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    return {
+      id: doctor.id,
+      crm: doctor.crm,
+      user: {
+        id: doctor.user.id,
+        name: doctor.user.name,
+        email: doctor.user.email,
+        roles: doctor.user.roles
+      }
+    }
+  }
 }
