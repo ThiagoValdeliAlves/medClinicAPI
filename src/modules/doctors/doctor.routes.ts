@@ -40,6 +40,7 @@ doctorsRoutes.get(
   (req: Request, res: Response) => workScheduleController.findById(req, res)
 )
 
+/// test
 doctorsRoutes.get('/:doctorId/calendar', authGuard.execute)
 
 export default doctorsRoutes
