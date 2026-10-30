@@ -34,4 +34,9 @@ doctorsRoutes.put(
   (req: Request, res: Response) => workScheduleController.update(req, res)
 )
 
+doctorsRoutes.get(
+  '/:doctorId/work-schedule',
+  authGuard.execute,
+  (req: Request, res: Response) => workScheduleController.findById(req, res)
+)
 export default doctorsRoutes

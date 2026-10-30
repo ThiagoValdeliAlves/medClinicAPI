@@ -35,4 +35,28 @@ export class WorkSchedulesService {
       shifts: workSchedule.shifts
     }
   }
+
+  async findById(id: number) {
+    const doctor = await this.doctorRepository.findById(id)
+    if (!doctor) {
+      throw new DomainError(
+        'Médico não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    const workSchedule = await this.workScheduleRepository.findByDoctorId(
+      doctor.id
+    )
+    if (!workSchedule) {
+      throw new DomainError(
+        'Escala não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    return {
+      shifts: workSchedule.shifts
+    }
+  }
 }
