@@ -20,7 +20,7 @@ export class PatientService {
     }
   }
 
-  async find(page = 1, pageSize = 10, name?: string) {
+  async find(page = 1, pageSize = 20, name?: string) {
     const [patients, total] = await this.patientsRepository.find(
       page,
       pageSize,
@@ -28,16 +28,18 @@ export class PatientService {
     )
 
     return {
-      items: patients.map((patient) => ({
+      data: patients.map((patient) => ({
         id: patient.id,
         name: patient.name,
         cpf: patient.cpf,
         createdAt: patient.creationDate
       })),
-      page,
-      pageSize,
-      total,
-      totalPages: Math.ceil(total / pageSize)
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize)
+      }
     }
   }
 

@@ -86,7 +86,7 @@ export class DoctorsController {
       const nameParam = req.query.name
 
       const page = pageParam === undefined ? 1 : Number(pageParam)
-      const pageSize = pageSizeParam === undefined ? 10 : Number(pageSizeParam)
+      const pageSize = pageSizeParam === undefined ? 20 : Number(pageSizeParam)
 
       if (
         !Number.isInteger(page) ||

@@ -52,7 +52,7 @@ export class DoctorsService {
     }
   }
 
-  async find(page = 1, pageSize = 10, name?: string) {
+  async find(page = 1, pageSize = 20, name?: string) {
     const [doctors, total] = await this.doctorRepository.find(
       page,
       pageSize,
@@ -60,7 +60,7 @@ export class DoctorsService {
     )
 
     return {
-      items: doctors.map((doctor) => ({
+      data: doctors.map((doctor) => ({
         id: doctor.id,
         crm: doctor.crm,
         user: {
@@ -70,10 +70,12 @@ export class DoctorsService {
           roles: doctor.user.roles
         }
       })),
-      page,
-      pageSize,
-      total,
-      totalPages: Math.ceil(total / pageSize)
+      meta: {
+        total,
+        page,
+        pageSize,
+        totalPages: Math.ceil(total / pageSize)
+      }
     }
   }
 
