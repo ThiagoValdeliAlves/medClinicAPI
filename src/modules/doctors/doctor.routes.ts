@@ -1,6 +1,9 @@
 import { Router, type Request, type Response } from 'express'
 
-import { doctorsController } from './doctor.container.js'
+import {
+  doctorsController,
+  workScheduleController
+} from './doctor.container.js'
 import {
   authGuard,
   roleGuard
@@ -22,6 +25,13 @@ doctorsRoutes.get('', authGuard.execute, (req: Request, res: Response) =>
 
 doctorsRoutes.get('/:id', authGuard.execute, (req: Request, res: Response) =>
   doctorsController.findById(req, res)
+)
+
+doctorsRoutes.put(
+  '/:doctorId/work-schedule',
+  authGuard.execute,
+  roleGuard.execute(UserRoles.ADMIN),
+  (req: Request, res: Response) => workScheduleController.update(req, res)
 )
 
 export default doctorsRoutes
