@@ -12,5 +12,6 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   url: configs.databaseUrl,
   entities: [User, Patient, Doctor, WorkSchedule],
-  migrations: ['dist/@commons/database/migrations/*.js']
+  migrations: ['dist/@commons/database/migrations/*.js'],
+  migrationsRun: true
 })
