@@ -1,7 +1,14 @@
 import { DomainError, ERROR_CODE } from '../errors/domain.error.js'
 
 export function toAbsoluteDayMinutes(timeString: string): number {
-  const [hour, minute] = timeString.split(':').map(Number)
+  const parts = timeString.split(':')
+
+  if (parts.length !== 2) {
+    throw new DomainError('Horário inválido', ERROR_CODE.DADOS_INVALIDOS)
+  }
+
+  const hour = Number(parts[0])
+  const minute = Number(parts[1])
 
   if (
     !Number.isInteger(hour) ||
@@ -20,7 +27,6 @@ export function toAbsoluteDayMinutes(timeString: string): number {
 
   return hour * 60 + minute
 }
-
 export function getDatePartsInTimeZone(date: Date, timeZone: string) {
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone,
