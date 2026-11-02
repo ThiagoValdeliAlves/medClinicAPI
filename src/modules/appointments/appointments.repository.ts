@@ -193,4 +193,74 @@ export class AppointmentsRepository {
       return await appointmentRepository.save(appointment)
     })
   }
+
+  async find(filters: {
+    doctorId?: number
+    patientId?: number
+    status?: APPOINTMENT_STATUS
+    from?: string
+    to?: string
+    page?: number
+    pageSize?: number
+  }) {
+    const {
+      doctorId,
+      patientId,
+      status,
+      from,
+      to,
+      page = 1,
+      pageSize = 20
+    } = filters
+
+    const query =
+      AppDataSource.getRepository(Appointments).createQueryBuilder(
+        'appointment'
+      )
+
+    if (doctorId) {
+      query.andWhere('appointment.doctorId = :doctorId', {
+        doctorId
+      })
+    }
+
+    if (patientId) {
+      query.andWhere('appointment.patientId = :patientId', {
+        patientId
+      })
+    }
+
+    if (status) {
+      query.andWhere('appointment.status = :status', {
+        status
+      })
+    }
+
+    if (from) {
+      query.andWhere('appointment.date >= :from', {
+        from: `${from} 00:00:00`
+      })
+    }
+
+    if (to) {
+      query.andWhere('appointment.date <= :to', {
+        to: `${to} 23:59:59.999`
+      })
+    }
+
+    query
+      .orderBy('appointment.date', 'ASC')
+      .skip((page - 1) * pageSize)
+      .take(pageSize)
+
+    const [appointments, total] = await query.getManyAndCount()
+
+    return {
+      appointments,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize)
+    }
+  }
 }
