@@ -117,3 +117,5 @@ Rota utilizada para testar os middlewares de autenticação e autorização por 
     "password": "Admin123"
 }
 ```
+
+
