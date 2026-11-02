@@ -11,11 +11,12 @@ const config = defineConfig(
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
+
   {
     languageOptions: {
       parserOptions: {
         projectService: {
-          allowDefaultProject: ['*.js', '*.mjs', 'vitest.config.ts']
+          allowDefaultProject: ['*.js', '*.mjs']
         },
         tsconfigRootDir: import.meta.dirname
       },
@@ -85,6 +86,11 @@ const config = defineConfig(
         }
       ]
     }
+  },
+
+  {
+    files: ['vitest.config.ts'],
+    ...tseslint.configs.disableTypeChecked
   }
 )
 

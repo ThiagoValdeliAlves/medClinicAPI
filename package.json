@@ -4,20 +4,25 @@
     "@types/express": "^5.0.6",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^26.4.1",
+    "@vitest/coverage-v8": "^5.1.0",
     "eslint": "^9.39.5",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.6",
     "prettier": "^3.9.6",
     "tsx": "^4.23.12",
     "typescript": "5.9",
-    "typescript-eslint": "^8.67.0"
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^5.1.0"
   },
   "name": "medclinicapi",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+
     "dev": "tsx watch src/server.ts",
     "build": "tsc",
     "migration:generate": "npm run build && typeorm migration:generate src/@commons/database/migrations/Migration -d dist/@commons/database/dataSource.js && eslint \"src/@commons/database/migrations/**/*.ts\" --fix",
