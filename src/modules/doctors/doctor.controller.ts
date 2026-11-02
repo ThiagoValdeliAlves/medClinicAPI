@@ -161,4 +161,71 @@ export class DoctorsController {
       })
     }
   }
+
+  async getCalendar(req: Request, res: Response) {
+    try {
+      const doctorId = Number(req.params.doctorId)
+      const { from, to } = req.query
+
+      if (!Number.isInteger(doctorId) || doctorId < 1) {
+        throw new DomainError(
+          'ID do médico inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const isValidDate = (value: unknown): value is string => {
+        if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+          return false
+        }
+
+        const date = new Date(`${value}T00:00:00.000Z`)
+
+        return (
+          !Number.isNaN(date.getTime()) &&
+          date.toISOString().slice(0, 10) === value
+        )
+      }
+
+      if (!isValidDate(from) || !isValidDate(to)) {
+        throw new DomainError('Período inválido', ERROR_CODE.DADOS_INVALIDOS)
+      }
+
+      const fromDate = new Date(`${from}T00:00:00.000Z`)
+      const toDate = new Date(`${to}T00:00:00.000Z`)
+
+      if (fromDate > toDate) {
+        throw new DomainError(
+          'Data inicial não pode ser maior que a data final',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const differenceInDays =
+        (toDate.getTime() - fromDate.getTime()) / (1000 * 60 * 60 * 24) + 1
+
+      if (differenceInDays > 31) {
+        throw new DomainError(
+          'O período não pode ser superior a 31 dias',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const calendar = await this.doctorService.getCalendar(doctorId, from, to)
+
+      return res.status(200).json(calendar)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
+      }
+
+      console.error(error)
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
+    }
+  }
 }

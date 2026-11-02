@@ -291,4 +291,21 @@ export class AppointmentsRepository {
 
     return await appointmentRepository.save(appointment)
   }
+
+  async findActiveByDoctorAndPeriod(
+    doctorId: number,
+    from: Date,
+    to: Date
+  ): Promise<Appointments[]> {
+    return AppDataSource.getRepository(Appointments)
+      .createQueryBuilder('appointment')
+      .where('appointment.doctorId = :doctorId', { doctorId })
+      .andWhere('appointment.date >= :from', { from })
+      .andWhere('appointment.date < :to', { to })
+      .andWhere('appointment.status != :cancelled', {
+        cancelled: APPOINTMENT_STATUS.CANCELLED
+      })
+      .orderBy('appointment.date', 'ASC')
+      .getMany()
+  }
 }
