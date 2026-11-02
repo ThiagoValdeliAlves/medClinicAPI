@@ -3,6 +3,7 @@ import type { Appointments } from './entities/appointments.entity.js'
 import type { APPOINTMENT_STATUS } from './entities/enums/AppointmentsStatus.js'
 import { AppDataSource } from '../../@commons/database/dataSource.js'
 import { DomainError, ERROR_CODE } from '../../@commons/errors/domain.error.js'
+import type { TokenPayload } from '../../@commons/utils/interfaces/tokenService.js'
 import { Doctor } from '../doctors/entities/doctor.entity.js'
 import { UserRoles } from '../users/entities/enums/userRole.js'
 
@@ -84,5 +85,45 @@ export class AppointmentService {
         totalPages: result.totalPages
       }
     }
+  }
+
+  async findById(id: number, user: TokenPayload) {
+    const appointment = await this.appointmentRepository.findById(id)
+
+    if (!appointment) {
+      throw new DomainError(
+        'Agendamento não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    const isAdmin = user.roles.includes(UserRoles.ADMIN)
+    const isDoctor = user.roles.includes(UserRoles.DOCTOR)
+
+    if (isDoctor && !isAdmin) {
+      const doctor = await AppDataSource.getRepository(Doctor).findOne({
+        where: {
+          user: {
+            id: user.id
+          }
+        }
+      })
+
+      if (!doctor) {
+        throw new DomainError(
+          'Médico não encontrado',
+          ERROR_CODE.RECURSO_NAO_ENCONTRADO
+        )
+      }
+
+      if (appointment.doctorId !== doctor.id) {
+        throw new DomainError(
+          'Você não tem permissão para acessar este agendamento',
+          ERROR_CODE.ACESSO_NEGADO
+        )
+      }
+    }
+
+    return this.appointmentMapper(appointment)
   }
 }

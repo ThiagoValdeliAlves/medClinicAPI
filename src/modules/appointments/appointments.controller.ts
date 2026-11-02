@@ -197,4 +197,36 @@ export class AppointmentController {
       })
     }
   }
+
+  async findById(req: Request, res: Response<unknown, { user: TokenPayload }>) {
+    try {
+      const id = Number(req.params.id)
+
+      if (!Number.isInteger(id) || id < 1) {
+        throw new DomainError(
+          'ID do agendamento inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const appointment = await this.appointmentService.findById(
+        id,
+        res.locals.user
+      )
+
+      return res.status(200).json(appointment)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
+      }
+
+      console.error(error)
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
+    }
+  }
 }

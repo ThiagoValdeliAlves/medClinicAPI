@@ -24,4 +24,11 @@ appointmentsRoutes.get(
     appointmentsController.find(req, res)
 )
 
+appointmentsRoutes.get(
+  '/:id',
+  authGuard.execute,
+  (req: Request, res: Response<unknown, { user: TokenPayload }>) =>
+    appointmentsController.findById(req, res)
+)
+
 export default appointmentsRoutes

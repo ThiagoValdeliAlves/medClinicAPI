@@ -263,4 +263,12 @@ export class AppointmentsRepository {
       totalPages: Math.ceil(total / pageSize)
     }
   }
+
+  async findById(id: number): Promise<Appointments | null> {
+    return AppDataSource.getRepository(Appointments).findOne({
+      where: {
+        id
+      }
+    })
+  }
 }
