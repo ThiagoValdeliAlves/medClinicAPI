@@ -46,6 +46,23 @@ export class AppointmentController {
     }
   }
 
+  private validateBodyForUpdateStatus(body: unknown) {
+    if (!Validator.isObject(body)) {
+      throw new DomainError('Body inválido', ERROR_CODE.DADOS_INVALIDOS)
+    }
+
+    if (
+      typeof body.status !== 'string' ||
+      !Object.values(APPOINTMENT_STATUS).includes(body.status)
+    ) {
+      throw new DomainError('Status inválido', ERROR_CODE.DADOS_INVALIDOS)
+    }
+
+    return {
+      status: body.status
+    }
+  }
+
   async create(req: Request, res: Response) {
     try {
       const data = this.validateBodyForCreate(req.body as unknown)
@@ -211,6 +228,44 @@ export class AppointmentController {
 
       const appointment = await this.appointmentService.findById(
         id,
+        res.locals.user
+      )
+
+      return res.status(200).json(appointment)
+    } catch (error) {
+      if (error instanceof DomainError) {
+        return res.status(error.status).json(error.toJSON())
+      }
+
+      console.error(error)
+
+      return res.status(500).json({
+        statusCode: 500,
+        error: 'ERRO_INTERNO',
+        message: 'Erro interno'
+      })
+    }
+  }
+
+  async updateStatus(
+    req: Request,
+    res: Response<unknown, { user: TokenPayload }>
+  ) {
+    try {
+      const id = Number(req.params.id)
+
+      if (!Number.isInteger(id) || id < 1) {
+        throw new DomainError(
+          'ID do agendamento inválido',
+          ERROR_CODE.DADOS_INVALIDOS
+        )
+      }
+
+      const { status } = this.validateBodyForUpdateStatus(req.body as unknown)
+
+      const appointment = await this.appointmentService.updateStatus(
+        id,
+        status,
         res.locals.user
       )
 

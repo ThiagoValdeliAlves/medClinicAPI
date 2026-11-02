@@ -1,4 +1,4 @@
-import { LessThan } from 'typeorm'
+import { LessThan, Not } from 'typeorm'
 
 import { Appointments } from './entities/appointments.entity.js'
 import { APPOINTMENT_STATUS } from './entities/enums/AppointmentsStatus.js'
@@ -181,7 +181,8 @@ export class AppointmentsRepository {
       const currentAppointments = await appointmentRepository.find({
         where: {
           doctorId: input.doctorId,
-          date: LessThan(appointmentEnd)
+          date: LessThan(appointmentEnd),
+          status: Not(APPOINTMENT_STATUS.CANCELLED)
         }
       })
 
@@ -270,5 +271,24 @@ export class AppointmentsRepository {
         id
       }
     })
+  }
+
+  async updateStatus(
+    id: number,
+    status: APPOINTMENT_STATUS
+  ): Promise<Appointments | null> {
+    const appointmentRepository = AppDataSource.getRepository(Appointments)
+
+    const appointment = await appointmentRepository.findOne({
+      where: { id }
+    })
+
+    if (!appointment) {
+      return null
+    }
+
+    appointment.status = status
+
+    return await appointmentRepository.save(appointment)
   }
 }

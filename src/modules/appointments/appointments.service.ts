@@ -1,6 +1,6 @@
 import type { AppointmentsRepository } from './appointments.repository.js'
 import type { Appointments } from './entities/appointments.entity.js'
-import type { APPOINTMENT_STATUS } from './entities/enums/AppointmentsStatus.js'
+import { APPOINTMENT_STATUS } from './entities/enums/AppointmentsStatus.js'
 import { AppDataSource } from '../../@commons/database/dataSource.js'
 import { DomainError, ERROR_CODE } from '../../@commons/errors/domain.error.js'
 import type { TokenPayload } from '../../@commons/utils/interfaces/tokenService.js'
@@ -125,5 +125,89 @@ export class AppointmentService {
     }
 
     return this.appointmentMapper(appointment)
+  }
+
+  async updateStatus(
+    id: number,
+    status: APPOINTMENT_STATUS,
+    user: TokenPayload
+  ) {
+    const appointment = await this.appointmentRepository.findById(id)
+
+    if (!appointment) {
+      throw new DomainError(
+        'Agendamento não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    const isAdmin = user.roles.includes(UserRoles.ADMIN)
+    const isSecretary = user.roles.includes(UserRoles.SECRETARY)
+    const isDoctor = user.roles.includes(UserRoles.DOCTOR)
+
+    let isAppointmentDoctor = false
+
+    if (isDoctor) {
+      const doctor = await AppDataSource.getRepository(Doctor).findOne({
+        where: {
+          user: {
+            id: user.id
+          }
+        }
+      })
+
+      if (doctor) {
+        isAppointmentDoctor = appointment.doctorId === doctor.id
+      }
+    }
+
+    const transitions = {
+      [APPOINTMENT_STATUS.SCHEDULED]: {
+        [APPOINTMENT_STATUS.IN_PROGRESS]: isAdmin || isAppointmentDoctor,
+
+        [APPOINTMENT_STATUS.CANCELLED]:
+          isAdmin || isSecretary || isAppointmentDoctor
+      },
+
+      [APPOINTMENT_STATUS.IN_PROGRESS]: {
+        [APPOINTMENT_STATUS.DONE]: isAdmin || isAppointmentDoctor,
+
+        [APPOINTMENT_STATUS.CANCELLED]: isAdmin || isAppointmentDoctor
+      }
+    }
+
+    const allowedTransitions = transitions[appointment.status]
+
+    const isValidTransition =
+      allowedTransitions &&
+      Object.prototype.hasOwnProperty.call(allowedTransitions, status)
+
+    if (!isValidTransition) {
+      throw new DomainError(
+        'Transição de status inválida',
+        ERROR_CODE.TRANSICAO_INVALIDA
+      )
+    }
+
+    if (!allowedTransitions[status]) {
+      throw new DomainError(
+        'Você não tem permissão para realizar esta transição',
+        ERROR_CODE.ACESSO_NEGADO
+      )
+    }
+
+    const updatedAppointment = await this.appointmentRepository.updateStatus(
+      id,
+      status
+    )
+
+    if (!updatedAppointment) {
+      throw new DomainError(
+        'Agendamento não encontrado',
+        ERROR_CODE.RECURSO_NAO_ENCONTRADO
+      )
+    }
+
+    return this.appointmentMapper(updatedAppointment)
   }
 }

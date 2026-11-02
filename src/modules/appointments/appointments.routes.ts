@@ -31,4 +31,11 @@ appointmentsRoutes.get(
     appointmentsController.findById(req, res)
 )
 
+appointmentsRoutes.patch(
+  '/:id/status',
+  authGuard.execute,
+  (req: Request, res: Response<unknown, { user: TokenPayload }>) =>
+    appointmentsController.updateStatus(req, res)
+)
+
 export default appointmentsRoutes
