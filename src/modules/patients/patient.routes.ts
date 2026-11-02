@@ -1,10 +1,14 @@
 import { Router, type Request, type Response } from 'express'
 
-import { patientController } from './patient.container.js'
+import {
+  medicalRecordsController,
+  patientController
+} from './patient.container.js'
 import {
   authGuard,
   roleGuard
 } from '../../@commons/middlewares/middleware.container.js'
+import type { TokenPayload } from '../../@commons/utils/interfaces/tokenService.js'
 import { UserRoles } from '../users/entities/enums/userRole.js'
 
 const patientRoutes = Router()
@@ -36,6 +40,21 @@ patientRoutes.delete(
   authGuard.execute,
   roleGuard.execute(UserRoles.ADMIN),
   (req: Request, res: Response) => patientController.deleteById(req, res)
+)
+
+patientRoutes.post(
+  '/:patientId/medical-records',
+  authGuard.execute,
+  roleGuard.execute(UserRoles.DOCTOR),
+  (req: Request, res: Response<unknown, { user: TokenPayload }>) =>
+    medicalRecordsController.create(req, res)
+)
+
+patientRoutes.get(
+  '/:patientId/medical-records',
+  authGuard.execute,
+  (req: Request, res: Response<unknown, { user: TokenPayload }>) =>
+    medicalRecordsController.findByPatientId(req, res)
 )
 
 export default patientRoutes
